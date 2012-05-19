@@ -10,8 +10,7 @@ function-to-be-minimized (residual function) in terms of these Parameters.
    Copyright (c) 2011 Matthew Newville, The University of Chicago
    <newville@cars.uchicago.edu>
 """
-
-from numpy import sqrt
+import numpy as np
 
 from scipy.optimize import leastsq as scipy_leastsq
 from scipy.optimize import anneal as scipy_anneal
@@ -50,7 +49,7 @@ class Parameters(OrderedDict):
         value.name = key
 
     def add(self, name, value=None, vary=True, expr=None,
-            min=None, max=None, soft_constraint=None):
+            min=None, max=None, bounds_scale=None):
         """convenience function for adding a Parameter:
         with   p = Parameters()
         p.add(name, value=XX, ....)
@@ -60,7 +59,7 @@ class Parameters(OrderedDict):
         """
         self.__setitem__(name, Parameter(value=value, name=name, vary=vary,
                                          expr=expr, min=min, max=max,
-                                         soft_constraint=soft_constraint))
+                                         bounds_scale=bounds_scale))
 
     def add_many(self, *parlist):
         """convenience function for adding a list of Parameters:
@@ -84,31 +83,31 @@ class Parameter(object):
     The value and min/max values will be be set to floats.
     """
     def __init__(self, name=None, value=None, vary=True,
-                 min=None, max=None, soft_constraint=None,
+                 min=None, max=None, bounds_scale=None,
                  expr=None, **kws):
         self.name = name
         self.value = value
         self.init_value = value
+
+        if min is None: min = -np.inf
+        if max is None: max = np.inf
         self.min = min
         self.max = max
         self.vary = vary
         self.expr = expr
-        self.soft_constraint = soft_constraint
+        self.bounds_scale = bounds_scale
         self.stderr = None
         self.correl = None
 
     def bounds_penalty(self):
         """returns penalty value for a parameter being out-of-bounds:
         0 for val is inside bounds [par.min, par.max]
-        par.soft_constraint * abs(val-nearest bound)  for val is outside bounds
+        par.bounds_scale * abs(val-nearest bound)  for val is outside bounds
         """
-        minval, maxval = -np.inf, np.inf
-        if self.min is not None: minval = self.min
-        if self.max is not None: maxval = self.max
-        if self.soft_contraint is None:
+        if self.bounds_scale is None:
             return 0
-        penalty = (max(minval-self.value, 0) + max(0, self.value-maxval))
-        return self.soft_constraint*penalty
+        return self.bounds_scale*(max(self.min-self.value, 0) +
+                                  max(0, self.value-self.max))
 
     def __repr__(self):
         s = []
@@ -120,7 +119,9 @@ class Parameter(object):
         elif not self.vary:
             val = "value=%s (fixed)" % (repr(self.value))
         s.append(val)
-        s.append("bounds=[%s:%s]" % (repr(self.min), repr(self.max)))
+        s.append("bounds=[%s:%s], bounds_scale=%s" % (repr(self.min),
+                                                      repr(self.max),
+                                                      repr(self.bounds_scale)))
         if self.expr is not None:
             s.append("expr='%s'" % (self.expr))
         return "<Parameter %s>" % ', '.join(s)
@@ -195,11 +196,9 @@ or set  leastsq_kws['maxfev']  to increase this maximum."""
             val = self.asteval.run(par.ast)
             check_ast_errors(self.asteval.error)
         # apply min/max for hard (non-soft) constraints
-        if par.soft_constraint is None:
-            if par.min is not None:
-                val = max(val, par.min)
-            if par.max is not None:
-                val = min(val, par.max)
+        if par.bounds_scale is None:
+            val = max(val, par.min)
+            val = min(val, par.max)
 
         self.asteval.symtable[name] = par.value = float(val)
         self.updated[name] = True
@@ -222,16 +221,16 @@ or set  leastsq_kws['maxfev']  to increase this maximum."""
             self.__update_paramval(name)
 
         resid = self.userfcn(self.params, *self.userargs, **self.userkws)
-        sum_sqr = 10*(resid**2).sum()/len(resid)
+        chi2_scale = 100.*(resid**2).sum()/len(resid)
         bounds_penalties = []
-        for p in self.params:
-            if p.soft_constraint is not None:
-                bounds_penalties.append(sum_sqr*p.bounds.penalty())
+        for pname, p in self.params.items():
+            if p.bounds_scale is not None:
+                bounds_penalties.append(chi2_scale*p.bounds_penalty())
         if len(bounds_penalties) > 0:
-            np.append(resid, bounds_penalties)
+            resid = np.append(resid, bounds_penalties)
 
         if hasattr(self.iter_cb, '__call__'):
-            self.iter_cb(self.params, self.nfev, out,
+            self.iter_cb(self.params, self.nfev, resid,
                          *self.userargs, **self.userkws)
         return resid
 
@@ -425,12 +424,12 @@ or set  leastsq_kws['maxfev']  to increase this maximum."""
                 cov = cov * sum_sqr / self.nfree
             for ivar, varname in enumerate(self.var_map):
                 par = self.params[varname]
-                par.stderr = sqrt(cov[ivar, ivar])
+                par.stderr = np.sqrt(cov[ivar, ivar])
                 par.correl = {}
                 for jvar, varn2 in enumerate(self.var_map):
                     if jvar != ivar:
                         par.correl[varn2] = (cov[ivar, jvar]/
-                                        (par.stderr * sqrt(cov[jvar, jvar])))
+                                        (par.stderr * np.sqrt(cov[jvar, jvar])))
 
         return self.success
 
