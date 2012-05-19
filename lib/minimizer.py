@@ -24,7 +24,7 @@ except ImportError:
 
 from .asteval import Interpreter
 from .astutils import NameFinder, valid_symbol_name
-    
+
 class Parameters(OrderedDict):
     """a custom dictionary of Parameters.  All keys must be
     strings, and valid Python symbol names, and all values
@@ -50,7 +50,7 @@ class Parameters(OrderedDict):
         value.name = key
 
     def add(self, name, value=None, vary=True, expr=None,
-            min=None, max=None):
+            min=None, max=None, soft_constraint=None):
         """convenience function for adding a Parameter:
         with   p = Parameters()
         p.add(name, value=XX, ....)
@@ -59,7 +59,8 @@ class Parameters(OrderedDict):
         p[name] = Parameter(name=name, value=XX, ....
         """
         self.__setitem__(name, Parameter(value=value, name=name, vary=vary,
-                                         expr=expr, min=min, max=max))
+                                         expr=expr, min=min, max=max,
+                                         soft_constraint=soft_constraint))
 
     def add_many(self, *parlist):
         """convenience function for adding a list of Parameters:
@@ -73,7 +74,7 @@ class Parameters(OrderedDict):
                     (name4, val4))
 
         """
-        for para in parlist:            
+        for para in parlist:
             self.add(*para)
 
 class Parameter(object):
@@ -83,7 +84,8 @@ class Parameter(object):
     The value and min/max values will be be set to floats.
     """
     def __init__(self, name=None, value=None, vary=True,
-                 min=None, max=None, expr=None, **kws):
+                 min=None, max=None, soft_constraint=None,
+                 expr=None, **kws):
         self.name = name
         self.value = value
         self.init_value = value
@@ -91,8 +93,22 @@ class Parameter(object):
         self.max = max
         self.vary = vary
         self.expr = expr
+        self.soft_constraint = soft_constraint
         self.stderr = None
         self.correl = None
+
+    def bounds_penalty(self):
+        """returns penalty value for a parameter being out-of-bounds:
+        0 for val is inside bounds [par.min, par.max]
+        par.soft_constraint * abs(val-nearest bound)  for val is outside bounds
+        """
+        minval, maxval = -np.inf, np.inf
+        if self.min is not None: minval = self.min
+        if self.max is not None: maxval = self.max
+        if self.soft_contraint is None:
+            return 0
+        penalty = (max(minval-self.value, 0) + max(0, self.value-maxval))
+        return self.soft_constraint*penalty
 
     def __repr__(self):
         s = []
@@ -178,11 +194,12 @@ or set  leastsq_kws['maxfev']  to increase this maximum."""
                 self.__update_paramval(dep)
             val = self.asteval.run(par.ast)
             check_ast_errors(self.asteval.error)
-        # apply min/max
-        if par.min is not None:
-            val = max(val, par.min)
-        if par.max is not None:
-            val = min(val, par.max)
+        # apply min/max for hard (non-soft) constraints
+        if par.soft_constraint is None:
+            if par.min is not None:
+                val = max(val, par.min)
+            if par.max is not None:
+                val = min(val, par.max)
 
         self.asteval.symtable[name] = par.value = float(val)
         self.updated[name] = True
@@ -204,11 +221,19 @@ or set  leastsq_kws['maxfev']  to increase this maximum."""
         for name in self.params:
             self.__update_paramval(name)
 
-        out = self.userfcn(self.params, *self.userargs, **self.userkws)
+        resid = self.userfcn(self.params, *self.userargs, **self.userkws)
+        sum_sqr = 10*(resid**2).sum()/len(resid)
+        bounds_penalties = []
+        for p in self.params:
+            if p.soft_constraint is not None:
+                bounds_penalties.append(sum_sqr*p.bounds.penalty())
+        if len(bounds_penalties) > 0:
+            np.append(resid, bounds_penalties)
+
         if hasattr(self.iter_cb, '__call__'):
             self.iter_cb(self.params, self.nfev, out,
                          *self.userargs, **self.userkws)
-        return out
+        return resid
 
     def __jacobian(self, fvars):
         """
@@ -332,7 +357,6 @@ or set  leastsq_kws['maxfev']  to increase this maximum."""
 
         self.nfev =  info['funcalls']
         self.message = info['task']
-
 
     def leastsq(self, scale_covar=True, **kws):
         """
