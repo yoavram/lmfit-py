@@ -109,6 +109,19 @@ class Parameter(object):
         return self.bounds_scale*(max(self.min-self.value, 0) +
                                   max(0, self.value-self.max))
 
+    def minuit_transform(self, val):
+        """transform freely varied value to bounded value using
+        the transformations described in the MINUIT User Guide"""
+        if (self.min not in (-np.inf, None) and
+            self.max not in (np.inf, None)):
+            return self.min + 0.5*(self.max - self.min)*(np.sin(val) + 1)
+        elif self.min not in (-np.inf, None):
+            return self.min - 1 + np.sqrt(val*val + 1)
+        elif self.max not in (np.inf, None):
+            return self.max + 1 - np.sqrt(val*val + 1)
+        else:
+            return val
+
     def __repr__(self):
         s = []
         if self.name is not None:
@@ -119,9 +132,9 @@ class Parameter(object):
         elif not self.vary:
             val = "value=%s (fixed)" % (repr(self.value))
         s.append(val)
-        s.append("bounds=[%s:%s], bounds_scale=%s" % (repr(self.min),
-                                                      repr(self.max),
-                                                      repr(self.bounds_scale)))
+        s.append("bounds=[%s:%s]" % (repr(self.min), repr(self.max)))
+        if self.bounds_scale is not None:
+            s.append("bounds_scale=%s" % (repr(self.bounds_scale)))
         if self.expr is not None:
             s.append("expr='%s'" % (self.expr))
         return "<Parameter %s>" % ', '.join(s)
@@ -203,7 +216,7 @@ or set  leastsq_kws['maxfev']  to increase this maximum."""
         self.asteval.symtable[name] = par.value = float(val)
         self.updated[name] = True
 
-    def __residual(self, fvars):
+    def __residual(self, fvars, apply_bounds=True):
         """
         residual function used for least-squares fit.
         With the new, candidate values of fvars (the fitting variables),
@@ -221,13 +234,14 @@ or set  leastsq_kws['maxfev']  to increase this maximum."""
             self.__update_paramval(name)
 
         resid = self.userfcn(self.params, *self.userargs, **self.userkws)
-        chi2_scale = 100.*(resid**2).sum()/len(resid)
-        bounds_penalties = []
-        for pname, p in self.params.items():
-            if p.bounds_scale is not None:
-                bounds_penalties.append(chi2_scale*p.bounds_penalty())
-        if len(bounds_penalties) > 0:
-            resid = np.append(resid, bounds_penalties)
+        if apply_bounds:
+            chi2_scale = 100.*(resid**2).sum()/len(resid)
+            bounds_penalties = []
+            for pname, p in self.params.items():
+                if p.bounds_scale is not None:
+                    bounds_penalties.append(chi2_scale*p.bounds_penalty())
+            if len(bounds_penalties) > 0:
+                resid = np.append(resid, bounds_penalties)
 
         if hasattr(self.iter_cb, '__call__'):
             self.iter_cb(self.params, self.nfev, resid,
@@ -349,13 +363,21 @@ or set  leastsq_kws['maxfev']  to increase this maximum."""
         lb_kws.update(kws)
         def penalty(params):
             "local penalty function -- lbgfsb wants sum-squares residual"
-            r = self.__residual(params)
+            # don't apply bounds at residual
+            r = self.__residual(params, apply_bounds=False)
             return (r*r).sum()
 
         xout, fout, info = scipy_lbfgsb(penalty, self.vars, **lb_kws)
-
+        print xout
         self.nfev =  info['funcalls']
         self.message = info['task']
+        r = self.__residual(xout, apply_bounds=False)
+        self.ndata = len(r)
+        sum_sqr = (r**2).sum()
+        self.chisqr = sum_sqr
+        self.nfree = (self.ndata - self.nvarys)
+        self.redchi = sum_sqr / self.nfree
+
 
     def leastsq(self, scale_covar=True, **kws):
         """
