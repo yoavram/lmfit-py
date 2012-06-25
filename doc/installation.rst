@@ -7,9 +7,8 @@ Prerequisites
 
 The lmfit package requires Python, Numpy, and Scipy.  Extensive testing on
 version compatibility has not yet been done.  Initial tests work with
-Python 3.2, but no testing with Python 3 has yet been done.  No testing has
-been done with 64-bit architectures, but as this package is pure Python, no
-significant troubles are expected.
+Python 3.2.  No testing has been done with 64-bit architectures, but as
+this package is pure Python, no significant troubles are expected.
 
 
 Downloads
@@ -94,7 +93,7 @@ The LMFIT-py code is distribution under the following license:
   software and its documentation, with or without modification is hereby
   granted provided that the above notice of copyright, these terms of use,
   and the disclaimer of warranty below appear in the source code and
-  documentation, and that none of the names of above institutions or 
+  documentation, and that none of the names of above institutions or
   authors appear in advertising or endorsement of works derived from this
   software without specific prior written permission from all parties.
 

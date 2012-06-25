@@ -46,7 +46,6 @@ Though in python, and fairly easy to use, this is not terribly different
 from how one would do the same fit in C or Fortran.
 
 
-
 .. _parameters-label:
 
 Using :class:`Parameters` instead of Variables
@@ -127,26 +126,40 @@ Of course, most of the information about how your data is modeled goes into
 the fitting function, but the approach here allows some external control as
 well.
 
+.. module:: lmfit
 
 The :class:`Parameter` class
 ========================================
 
-.. class:: Parameter(value=None[, vary=True[, min=None[, max=None[, name=None[, expr=None]]]]])
+# .. autoclass:: Parameter
+#    :members:
+#
+#    .. autodata:: name some name
+#
+# XXXXX OLD PARAM DOC XXXX
+# ===============================
+
+
+.. class:: Parameter(value=None[, name=None[, vary=True[, min=None[, max=None[, bounds_scale=None[, expr=None]]]]])
 
    create a Parameter object.   These are the fundamental extension of a
    fit variable within lmfit, but you will probably create most of these
    with the :class:`Parameters` class.
 
-   :param value: the numerical value for the parameter
+   :param name: parameter name
+   :type name: ``None`` or string -- will be overwritten during fit if ``None``.
+   :param value: the numeric value for the parameter
+   :type value: float.
    :param vary:  whether to vary the parameter or not.
    :type vary:  boolean (``True``/``False``)
    :param min:  lower bound for value (``None`` = no lower bound).
+   :type min: float or ``None``
    :param max:  upper bound for value (``None`` = no upper bound).
-
-   :param name: parameter name
-   :type name: ``None`` or string -- will be overwritten during fit if ``None``.
+   :type max: float or ``None``
+   :param bounds_scale:  scale for "soft constraint" penantly. (``None`` = hard constraint).
+   :type bounds_scale: float or ``None``
    :param expr:  mathematical expression to use to evaluate value during fit.
-   :type expr: ``None`` or string
+   :type expr: string or ``None``
 
 
 Each of these inputs is turned into an attribute of the same name.   As
