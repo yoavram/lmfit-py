@@ -31,7 +31,6 @@ class Parameters(OrderedDict):
 
     Custom methods:
     ---------------
-
     add()
     add_many()
     """
@@ -77,10 +76,26 @@ class Parameters(OrderedDict):
             self.add(*para)
 
 class Parameter(object):
-    """A Parameter is the basic Parameter going
-    into Fit Model.  The Parameter holds many attributes:
-    value, vary, max_value, min_value, constraint expression.
-    The value and min/max values will be be set to floats.
+    """create a Parameter object, an extension of a fitting variable.
+
+
+    Parameters
+    -----------
+    name :  string
+        the name of the Parameter
+    value : float
+        value for Parameter -- may be adjusted in fit.
+    vary :  bool
+        whether to vary value in the fit.
+    min : float or ``None``
+        minimum value the Parameter can have: ``None`` means no lower bound.
+    max : float or ``None``
+        maximum value the Parameter can have: ``None`` means no upper bound.
+    bounds_scale: float or ``None``
+        scale for ''soft constraint'' penalty. ``None`` means bounds will be hard constraints.
+    expr : string
+        mathematical expression for value, in terms of other Parameters.
+
     """
     def __init__(self, name=None, value=None, vary=True,
                  min=None, max=None, bounds_scale=None,
@@ -156,9 +171,8 @@ def check_ast_errors(error):
             msg = '\n'.join(err.get_error())
         raise MinimizerException(msg)
 
-
 class Minimizer(object):
-    """general minimizer"""
+    """General Minimizer"""
     err_nonparam = \
      "params must be a minimizer.Parameters() instance or list of Parameters()"
     err_maxfev   = """Too many function calls (max set to  %i)!  Use:
