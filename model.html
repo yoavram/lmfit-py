@@ -905,7 +905,7 @@ values with uncertainties and correlations.  As with <a class="reference interna
 AIC measures the relative quality of a statistical model for a given set of data.
 AIC balances between the fit of the model to the data and the complexity of the model;
 it can be used to prevent <a class="reference external" href="http://en.wikipedia.org/wiki/Overfitting">overfitting</a>.</p>
-<p>AIC is computed by <cite>AIC = n * log(rss/n) + 2k</cite>, where <cite>n</cite> is the number of data points, <cite>rss</cite> is the sum of residuals squares, and <cite>k</cite> in the number of varying parameters.</p>
+<p>AIC is computed by <cite>AIC = n * log(rss/n) + 2k</cite>, where <cite>n</cite> is the number of data points, <cite>rss</cite> is the sum of residuals squares, and <cite>k</cite> in the number of estimated parameters.</p>
 <p>AIC is used for model selection by selecting the model with the <em>lowest</em> AIC.
 It is a relative measure and as such can only be used to compare models.
 Compared to <a class="reference external" href="http://en.wikipedia.org/wiki/Bayesian_information_criterion">BIC</a>, AIC can be considered
@@ -919,7 +919,7 @@ less conservative, giving less weight to model simplicity (number of parameters)
 BIC measures the relative quality of a statistical model for a given set of data.
 BIC balances between the fit of the model to the data and the complexity of the model;
 it can be used to prevent <a class="reference external" href="http://en.wikipedia.org/wiki/Overfitting">overfitting</a>.</p>
-<p>BIC is computed by <cite>BIC = n * log(rss/n) + log(n) k</cite>, where <cite>n</cite> is the number of data points, <cite>rss</cite> is the sum of residuals squares, and <cite>k</cite> in the number of varying parameters.</p>
+<p>BIC is computed by <cite>BIC = n * log(rss/n) + log(n) k</cite>, where <cite>n</cite> is the number of data points, <cite>rss</cite> is the sum of residuals squares, and <cite>k</cite> in the number of estimated parameters.</p>
 <p>BIC is used for model selection by selecting the model with the <em>lowest</em> BIC.
 BIC is a relative measure and as such can only be used to compare models.
 Compared to <a class="reference external" href="http://en.wikipedia.org/wiki/Akaike_information_criterion">AIC</a>, BIC can be considered
@@ -931,14 +931,15 @@ more conservative, giving more weight to model simplicity (number of parameters)
 <tt class="descclassname">ModelFit.</tt><tt class="descname">lik_ratio</tt><big>(</big><em>other</em><big>)</big><a class="headerlink" href="#model.ModelFit.lik_ratio" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate a <a class="reference external" href="http://en.wikipedia.org/wiki/Likelihood-ratio_test">likelihood ratio test</a> for two model fits.</p>
 <p>The likelihood ratio test is performed on two nested models
-(<cite>self</cite> is nested in <cite>other</cite>; that is, some of the parameters of <cite>other</cite> are fixed in <cite>self</cite>).</p>
+(<cite>self</cite> is nested in <cite>other</cite>; that is, some of the parameters of <cite>other</cite> are fixed in <cite>self</cite> &#8211;
+the estimated paramters of <cite>self</cite> are a subset of the estimated parameters of <cite>other</cite>).</p>
 <p>The null hypothesis of the test is that the nested model is true.
 The method returns the p-value of the test -
 the likelihood of getting the model fits we got, given the null hypothesis and the data.</p>
 <p>The test calculates the statistic <cite>D = -2 log(lik0/lik1)</cite>.
 <cite>lik0</cite> and <cite>lik1</cite> are the likelihoods of the nested and the nesting models,
 which are calculated as the reciprocal of the residual sum of squares.</p>
-<p>By Wilks&#8217;s theorem, <cite>D</cite> is approximately <a class="reference external" href="http://en.wikipedia.org/wiki/Chi-squared_distribution">chi-square distributed</a> with <cite>df</cite> degrees of freedom,
+<p>By Wilks&#8217;s theorem, <cite>D</cite> is asymptotically <a class="reference external" href="http://en.wikipedia.org/wiki/Chi-squared_distribution">chi-square distributed</a> with <cite>df</cite> degrees of freedom,
 where <cite>df</cite> is the difference in number of parameters between the models;
 this allows the approximation of the p-value.</p>
 </dd></dl>
