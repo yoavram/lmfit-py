@@ -1,3 +1,4 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -13,7 +14,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
+        URL_ROOT:    '',
         VERSION:     '0.8.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -109,7 +110,7 @@
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="parameters.html"
-                        title="previous chapter"><tt class="docutils literal"><span class="pre">Parameter</span></tt>  and <tt class="docutils literal"><span class="pre">Parameters</span></tt></a></p>
+                        title="previous chapter"><tt class="docutils literal docutils literal"><span class="pre">Parameter</span></tt>  and <tt class="docutils literal docutils literal"><span class="pre">Parameters</span></tt></a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="model.html"
                         title="next chapter">Modeling Data and Curve Fitting</a></p>
@@ -786,15 +787,14 @@ and correlations from fit.</p>
 </pre></div>
 </div>
 <p>which would write out:</p>
-<div class="highlight-python"><div class="highlight"><pre>[[Variables]]
+<div class="highlight-python"><pre>[[Variables]]
     amp:      13.9121944 +/- 0.141202 (1.01%) (init= 13)
     decay:    0.03264538 +/- 0.000380 (1.16%) (init= 0.02)
     period:   5.48507044 +/- 0.026664 (0.49%) (init= 2)
     shift:    0.16203677 +/- 0.014056 (8.67%) (init= 0)
 [[Correlations]] (unreported correlations are &lt;  0.100)
     C(period, shift)             =  0.797
-    C(amp, decay)                =  0.582
-</pre></div>
+    C(amp, decay)                =  0.582</pre>
 </div>
 </div>
 </div>
@@ -830,7 +830,7 @@ and correlations from fit.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Matthew Newville, The University of Chicago,  Till Stensitzki, Freie Universitat Berlin.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

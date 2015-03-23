@@ -1,3 +1,4 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -13,7 +14,7 @@
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
+        URL_ROOT:    '',
         VERSION:     '0.8.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
@@ -671,7 +672,7 @@ built-in default values.  So, we&#8217;ll simply use:</p>
 </pre></div>
 </div>
 <p>which prints out the results:</p>
-<div class="highlight-python"><div class="highlight"><pre>[[Model]]
+<div class="highlight-python"><pre>[[Model]]
     gaussian
 [[Fit Statistics]]
     # function evals   = 21
@@ -682,11 +683,10 @@ built-in default values.  So, we&#8217;ll simply use:</p>
 [[Variables]]
     amplitude:   30.3135571 +/- 0.157126 (0.52%) (init= 29.08159)
     center:      9.24277049 +/- 0.007374 (0.08%) (init= 9.25)
-    fwhm:        2.90156963 +/- 0.017366 (0.60%)  == &#39;2.3548200*sigma&#39;
+    fwhm:        2.90156963 +/- 0.017366 (0.60%)  == '2.3548200*sigma'
     sigma:       1.23218319 +/- 0.007374 (0.60%) (init= 1.35)
 [[Correlations]] (unreported correlations are &lt;  0.250)
-    C(amplitude, sigma)          =  0.577
-</pre></div>
+    C(amplitude, sigma)          =  0.577</pre>
 </div>
 <dl class="docutils">
 <dt>[We see a few interesting differences from the results of the previous</dt>
@@ -712,7 +712,7 @@ Perhaps a Lorentzian would be better?  To do this, we simply replace
 </pre></div>
 </div>
 <p>Predictably, the first thing we try gives results that are worse:</p>
-<div class="highlight-python"><div class="highlight"><pre>[[Model]]
+<div class="highlight-python"><pre>[[Model]]
     lorentzian
 [[Fit Statistics]]
     # function evals   = 25
@@ -723,11 +723,10 @@ Perhaps a Lorentzian would be better?  To do this, we simply replace
 [[Variables]]
     amplitude:   38.9728645 +/- 0.313857 (0.81%) (init= 36.35199)
     center:      9.24438944 +/- 0.009275 (0.10%) (init= 9.25)
-    fwhm:        2.30969034 +/- 0.026312 (1.14%)  == &#39;2.0000000*sigma&#39;
+    fwhm:        2.30969034 +/- 0.026312 (1.14%)  == '2.0000000*sigma'
     sigma:       1.15484517 +/- 0.013156 (1.14%) (init= 1.35)
 [[Correlations]] (unreported correlations are &lt;  0.250)
-    C(amplitude, sigma)          =  0.709
-</pre></div>
+    C(amplitude, sigma)          =  0.709</pre>
 </div>
 <p>with the plot shown on the right in the figure above.</p>
 <p>A Voigt model does a better job.  Using <a class="reference internal" href="#models.VoigtModel" title="models.VoigtModel"><tt class="xref py py-class docutils literal"><span class="pre">VoigtModel</span></tt></a>, this is
@@ -740,7 +739,7 @@ as simple as:</p>
 </pre></div>
 </div>
 <p>which gives:</p>
-<div class="highlight-python"><div class="highlight"><pre>[[Model]]
+<div class="highlight-python"><pre>[[Model]]
     voigt
 [[Fit Statistics]]
     # function evals   = 17
@@ -751,12 +750,11 @@ as simple as:</p>
 [[Variables]]
     amplitude:   35.7554017 +/- 0.138614 (0.39%) (init= 43.62238)
     center:      9.24411142 +/- 0.005054 (0.05%) (init= 9.25)
-    fwhm:        2.62951718 +/- 0.013269 (0.50%)  == &#39;3.6013100*sigma&#39;
-    gamma:       0.73015574 +/- 0.003684 (0.50%)  == &#39;sigma&#39;
+    fwhm:        2.62951718 +/- 0.013269 (0.50%)  == '3.6013100*sigma'
+    gamma:       0.73015574 +/- 0.003684 (0.50%)  == 'sigma'
     sigma:       0.73015574 +/- 0.003684 (0.50%) (init= 0.8775)
 [[Correlations]] (unreported correlations are &lt;  0.250)
-    C(amplitude, sigma)          =  0.651
-</pre></div>
+    C(amplitude, sigma)          =  0.651</pre>
 </div>
 <p>with the much better value for <span class="math">\(\chi^2\)</span> and the obviously better
 match to the data as seen in the figure below (left).</p>
@@ -781,7 +779,7 @@ starting value:</p>
 </pre></div>
 </div>
 <p>which gives:</p>
-<div class="highlight-python"><div class="highlight"><pre>[[Model]]
+<div class="highlight-python"><pre>[[Model]]
     voigt
 [[Fit Statistics]]
     # function evals   = 21
@@ -792,12 +790,11 @@ starting value:</p>
 [[Variables]]
     amplitude:   34.1914716 +/- 0.179468 (0.52%) (init= 43.62238)
     center:      9.24374845 +/- 0.004419 (0.05%) (init= 9.25)
-    fwhm:        3.22385491 +/- 0.050974 (1.58%)  == &#39;3.6013100*sigma&#39;
+    fwhm:        3.22385491 +/- 0.050974 (1.58%)  == '3.6013100*sigma'
     gamma:       0.52540157 +/- 0.018579 (3.54%) (init= 0.7)
     sigma:       0.89518950 +/- 0.014154 (1.58%) (init= 0.8775)
 [[Correlations]] (unreported correlations are &lt;  0.250)
-    C(amplitude, gamma)          =  0.821
-</pre></div>
+    C(amplitude, gamma)          =  0.821</pre>
 </div>
 <p>and the fit shown on the right above.</p>
 <p>Comparing the two fits with the Voigt function, we see that <span class="math">\(\chi^2\)</span>
@@ -856,10 +853,10 @@ and <tt class="xref py py-meth docutils literal"><span class="pre">guess()</span
 <tt class="xref py py-meth docutils literal"><span class="pre">make_params()</span></tt> arguments for the linear component.
 After making a composite model, we run <tt class="xref py py-meth docutils literal"><span class="pre">fit()</span></tt> and report the
 results, which give:</p>
-<div class="highlight-python"><div class="highlight"><pre>[[Model]]
+<div class="highlight-python"><pre>[[Model]]
  Composite Model:
-    step(prefix=&#39;step_&#39;,form=&#39;erf&#39;)
-    linear(prefix=&#39;line_&#39;)
+    step(prefix='step_',form='erf')
+    linear(prefix='line_')
 [[Fit Statistics]]
     # function evals   = 49
     # data points      = 201
@@ -875,8 +872,7 @@ results, which give:</p>
 [[Correlations]] (unreported correlations are &lt;  0.100)
     C(step_amplitude, step_sigma)  =  0.564
     C(line_intercept, step_center)  =  0.428
-    C(step_amplitude, step_center)  =  0.109
-</pre></div>
+    C(step_amplitude, step_center)  =  0.109</pre>
 </div>
 <p>with a plot of</p>
 <a class="reference external image-reference" href="_images/models_stepfit.png"><img alt="_images/models_stepfit.png" src="_images/models_stepfit.png" style="width: 50%;" /></a>
@@ -944,11 +940,11 @@ individual model <tt class="docutils literal"><span class="pre">gauss1</span></t
 <p>Note also in the example here that we explicitly set bounds on many of the
 parameter values.</p>
 <p>The fit results printed out are:</p>
-<div class="highlight-python"><div class="highlight"><pre>[[Model]]
+<div class="highlight-python"><pre>[[Model]]
  Composite Model:
-    gaussian(prefix=&#39;g1_&#39;)
-    gaussian(prefix=&#39;g2_&#39;)
-    exponential(prefix=&#39;exp_&#39;)
+    gaussian(prefix='g1_')
+    gaussian(prefix='g2_')
+    exponential(prefix='exp_')
 [[Fit Statistics]]
     # function evals   = 55
     # data points      = 250
@@ -960,11 +956,11 @@ parameter values.</p>
     exp_decay:       90.9508788 +/- 1.103104 (1.21%) (init= 93.24905)
     g1_amplitude:    4257.77384 +/- 42.38354 (1.00%) (init= 2000)
     g1_center:       107.030955 +/- 0.150068 (0.14%) (init= 105)
-    g1_fwhm:         39.2609205 +/- 0.377907 (0.96%)  == &#39;2.3548200*g1_sigma&#39;
+    g1_fwhm:         39.2609205 +/- 0.377907 (0.96%)  == '2.3548200*g1_sigma'
     g1_sigma:        16.6725781 +/- 0.160482 (0.96%) (init= 15)
     g2_amplitude:    2493.41747 +/- 36.16907 (1.45%) (init= 2000)
     g2_center:       153.270103 +/- 0.194665 (0.13%) (init= 155)
-    g2_fwhm:         32.5128760 +/- 0.439860 (1.35%)  == &#39;2.3548200*g2_sigma&#39;
+    g2_fwhm:         32.5128760 +/- 0.439860 (1.35%)  == '2.3548200*g2_sigma'
     g2_sigma:        13.8069474 +/- 0.186791 (1.35%) (init= 15)
 [[Correlations]] (unreported correlations are &lt;  0.500)
     C(g1_amplitude, g1_sigma)    =  0.824
@@ -972,8 +968,7 @@ parameter values.</p>
     C(g1_sigma, g2_center)       =  0.684
     C(g1_amplitude, g2_center)   =  0.648
     C(g1_center, g2_center)      =  0.621
-    C(g1_center, g1_sigma)       =  0.507
-</pre></div>
+    C(g1_center, g1_sigma)       =  0.507</pre>
 </div>
 <p>We get a very good fit to this challenging problem (described at the NIST
 site as of average difficulty, but the tests there are generally hard) by
@@ -1007,11 +1002,11 @@ That is, with:</p>
 <p>we can get a better initial estimate, and the fit converges in fewer steps,
 getting to identical values (to the precision printed out in the report),
 and without any bounds on parameters at all:</p>
-<div class="highlight-python"><div class="highlight"><pre>[[Model]]
+<div class="highlight-python"><pre>[[Model]]
  Composite Model:
-    gaussian(prefix=&#39;g1_&#39;)
-    gaussian(prefix=&#39;g2_&#39;)
-    exponential(prefix=&#39;exp_&#39;)
+    gaussian(prefix='g1_')
+    gaussian(prefix='g2_')
+    exponential(prefix='exp_')
 [[Fit Statistics]]
     # function evals   = 46
     # data points      = 250
@@ -1023,11 +1018,11 @@ and without any bounds on parameters at all:</p>
     exp_decay:       90.9508863 +/- 1.103105 (1.21%) (init= 111.1985)
     g1_amplitude:    4257.77321 +/- 42.38338 (1.00%) (init= 2126.432)
     g1_center:       107.030954 +/- 0.150067 (0.14%) (init= 106.5)
-    g1_fwhm:         39.2609141 +/- 0.377905 (0.96%)  == &#39;2.3548200*g1_sigma&#39;
+    g1_fwhm:         39.2609141 +/- 0.377905 (0.96%)  == '2.3548200*g1_sigma'
     g1_sigma:        16.6725754 +/- 0.160481 (0.96%) (init= 14.5)
     g2_amplitude:    2493.41766 +/- 36.16948 (1.45%) (init= 1878.892)
     g2_center:       153.270100 +/- 0.194667 (0.13%) (init= 150)
-    g2_fwhm:         32.5128777 +/- 0.439866 (1.35%)  == &#39;2.3548200*g2_sigma&#39;
+    g2_fwhm:         32.5128777 +/- 0.439866 (1.35%)  == '2.3548200*g2_sigma'
     g2_sigma:        13.8069481 +/- 0.186794 (1.35%) (init= 15)
 [[Correlations]] (unreported correlations are &lt;  0.500)
     C(g1_amplitude, g1_sigma)    =  0.824
@@ -1035,8 +1030,7 @@ and without any bounds on parameters at all:</p>
     C(g1_sigma, g2_center)       =  0.684
     C(g1_amplitude, g2_center)   =  0.648
     C(g1_center, g2_center)      =  0.621
-    C(g1_center, g1_sigma)       =  0.507
-</pre></div>
+    C(g1_center, g1_sigma)       =  0.507</pre>
 </div>
 <p>This example is in the file <tt class="docutils literal"><span class="pre">doc_nistgauss2.py</span></tt> in the examples folder,
 and the fit result shown on the right above shows an improved initial
@@ -1075,7 +1069,7 @@ estimate of the data.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Matthew Newville, The University of Chicago,  Till Stensitzki, Freie Universitat Berlin.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>
